@@ -6,6 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
 @Entity
 @Table(name="students_info")
 public class StudentBean {
@@ -15,6 +16,8 @@ public class StudentBean {
 	public int studId;
 	public int userId;
 	public int groupId;
+	public int rating;
+	public String feed;
 	public int getStudId() {
 		return studId;
 	}
@@ -47,6 +50,34 @@ public class StudentBean {
 		super();
 		this.userId = userId;
 		this.groupId = groupId;
+	}
+	public int getRating() {
+		return rating;
+	}
+	public void setRating(int rating) {
+		this.rating = rating;
+	}
+	
+	public String getFeed() {
+		return feed;
+	}
+	public void setFeed(String feed) {
+		this.feed = feed;
+	}
+	public StudentBean(int studId, int userId, int groupId,int rating) {
+		super();
+		this.studId = studId;
+		this.userId = userId;
+		this.groupId = groupId;
+		this.rating = rating;
+	}
+	public StudentBean(int studId, int userId, int groupId,int rating,String feed) {
+		super();
+		this.studId = studId;
+		this.userId = userId;
+		this.groupId = groupId;
+		this.rating = rating;
+		this.feed=feed;
 	}
 	
 	

@@ -21,8 +21,14 @@ public interface StudentService {
 
 	StudentBean studInfo(Integer id, Integer groupId);
 
-	Map<String, String> interests(int id);
+
 
 	List<StudentBean> peopleInfo(int groupId);
+
+	StudentBean addRatingClass(int id, int groupId, int val);
+
+	List<StudentBean> getRatingClass(int groupId);
+
+	StudentBean addFeedClass(int id, int groupId, String value);
 
 }

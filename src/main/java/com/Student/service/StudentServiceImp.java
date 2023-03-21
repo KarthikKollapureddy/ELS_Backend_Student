@@ -2,6 +2,7 @@ package com.Student.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,11 +36,11 @@ public class StudentServiceImp implements StudentService {
 	@Override
 	public List<GroupBean> getGroups(Integer id) throws GroupNotFound {
 		// TODO Auto-generated method stub
-		Interest intrst= restTemplate.getForObject("http://localhost:8098/elearning/api/getInterest/"+id, Interest.class);
+		Interest intrst= restTemplate.getForObject("http://localhost:8787/elearning/api/main/getInterest/"+id, Interest.class);
 		//System.out.println(intrst.getUserId());
 		//System.out.println(restTemplate.getForObject("http://localhost:8098/elearning/api/interest/"+id, Interest.class));
 		
-		ResponseEntity<GroupBean[]> response= restTemplate.getForEntity("http://localhost:8080/elearning/api/trainer/getAll",GroupBean[].class);
+		ResponseEntity<GroupBean[]> response= restTemplate.getForEntity("http://localhost:8787/elearning/api/trainer/getAll",GroupBean[].class);
 			   
 		
 //		GroupBean[] res = response.getBody();
@@ -80,7 +81,7 @@ public class StudentServiceImp implements StudentService {
 	public StudentBean joinGroup(StudentBean sb) throws LimitCross {
 		// TODO Auto-generated method stub
 		List<StudentBean> res=studDao.findByGroupId(sb.getGroupId());
-		GroupBean gr= restTemplate.getForObject("http://localhost:8080/elearning/api/trainer/getClass/"+sb.getGroupId(), GroupBean.class);
+		GroupBean gr= restTemplate.getForObject("http://localhost:8787/elearning/api/trainer/getClass/"+sb.getGroupId(), GroupBean.class);
 		//System.out.println(intrst.getUserId());
 		int len=res.size();
 		if(len<gr.getGroupLimit()) {
@@ -95,7 +96,7 @@ public class StudentServiceImp implements StudentService {
 		List<StudentBean> stud = studDao.findByUserId(id);
 		List<GroupBean> gr=new ArrayList<>();
 		for(StudentBean st:stud) {
-			GroupBean g= restTemplate.getForObject("http://localhost:8080/elearning/api/trainer/getClass/"+st.getGroupId(), GroupBean.class);
+			GroupBean g= restTemplate.getForObject("http://localhost:8787/elearning/api/trainer/getClass/"+st.getGroupId(), GroupBean.class);
 			gr.add(g);
 		}
 		
@@ -123,20 +124,51 @@ public class StudentServiceImp implements StudentService {
 		return studDao.findByGroupIdAndUserId(groupId,id);
 	}
 
-	@Override
-	public Map<String, String> interests(int id) {
-		// TODO Auto-generated method stub
-		Interest intrst= restTemplate.getForObject("http://localhost:8098/elearning/api/getInterest/"+id, Interest.class);
-		Subjects sub1,sub2,sub3;
-		sub1=restTemplate.getForObject("http://localhost:8098/elearning/api/getInterest/"+intrst.getIntrst1(), Subjects.class);
-		
-		return null;
-	}
-
+	
 	@Override
 	public List<StudentBean> peopleInfo(int groupId) {
 		// TODO Auto-generated method stub
 		return studDao.findByGroupId(groupId);
+	}
+
+	@Override
+	public StudentBean addRatingClass(int id, int groupId, int val) {
+		// TODO Auto-generated method stub
+		StudentBean st=studDao.findByGroupIdAndUserId(groupId,id);
+		int s=0;
+		st.setRating(val);
+		List<StudentBean> students=studDao.findByGroupId(groupId);
+		for(StudentBean stud:students) {
+			s+=stud.getRating();
+		}
+		GroupBean response= restTemplate.getForObject("http://localhost:8787/elearning/api/trainer/getClass/"+groupId,GroupBean.class);
+		Map < String, Integer > params = new HashMap < String,Integer > ();
+
+		response.setRating(s/students.size());
+		System.out.print(s/students.size());
+		//restTemplate.postForObject("http://localhost:8787/elearning/api/trainer/edit/"+groupId,response,GroupBean.class);
+		//restTemplate.put("http://localhost:8787/elearning/api/trainer/edit/"+groupId,response);
+		//restTemplate.put("http://localhost:8787/elearning/api/trainer/edit/"+groupId,response,GroupBean.class);
+		params.put("rating",s/students.size());
+		restTemplate.put("http://localhost:8787/elearning/api/trainer/edit/"+groupId, response, params);
+		
+		
+		return studDao.saveAndFlush(st);
+	}
+
+	@Override
+	public List<StudentBean> getRatingClass(int groupId) {
+		// TODO Auto-generated method stub
+		return studDao.findByGroupId(groupId);
+	}
+
+	@Override
+	public StudentBean addFeedClass(int id, int groupId, String value) {
+		// TODO Auto-generated method stub
+		StudentBean st=studDao.findByGroupIdAndUserId(groupId,id);
+		
+		st.setFeed(value);
+		return studDao.saveAndFlush(st);
 	}
 		
 	}
