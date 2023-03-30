@@ -36,11 +36,11 @@ public class StudentServiceImp implements StudentService {
 	@Override
 	public List<GroupBean> getGroups(Integer id) throws GroupNotFound {
 		// TODO Auto-generated method stub
-		Interest intrst= restTemplate.getForObject("http://localhost:8787/elearning/api/main/getInterest/"+id, Interest.class);
+		Interest intrst= restTemplate.getForObject("http://localhost:8098/elearning/api/main/getInterest/"+id, Interest.class);
 		//System.out.println(intrst.getUserId());
 		//System.out.println(restTemplate.getForObject("http://localhost:8098/elearning/api/interest/"+id, Interest.class));
 		
-		ResponseEntity<GroupBean[]> response= restTemplate.getForEntity("http://localhost:8787/elearning/api/trainer/getAll",GroupBean[].class);
+		ResponseEntity<GroupBean[]> response= restTemplate.getForEntity("http://localhost:8080/elearning/api/trainer/getAll",GroupBean[].class);
 			   
 		
 //		GroupBean[] res = response.getBody();
@@ -81,7 +81,7 @@ public class StudentServiceImp implements StudentService {
 	public StudentBean joinGroup(StudentBean sb) throws LimitCross {
 		// TODO Auto-generated method stub
 		List<StudentBean> res=studDao.findByGroupId(sb.getGroupId());
-		GroupBean gr= restTemplate.getForObject("http://localhost:8787/elearning/api/trainer/getClass/"+sb.getGroupId(), GroupBean.class);
+		GroupBean gr= restTemplate.getForObject("http://localhost:8080/elearning/api/trainer/getClass/"+sb.getGroupId(), GroupBean.class);
 		//System.out.println(intrst.getUserId());
 		int len=res.size();
 		if(len<gr.getGroupLimit()) {
@@ -96,7 +96,7 @@ public class StudentServiceImp implements StudentService {
 		List<StudentBean> stud = studDao.findByUserId(id);
 		List<GroupBean> gr=new ArrayList<>();
 		for(StudentBean st:stud) {
-			GroupBean g= restTemplate.getForObject("http://localhost:8787/elearning/api/trainer/getClass/"+st.getGroupId(), GroupBean.class);
+			GroupBean g= restTemplate.getForObject("http://localhost:8080/elearning/api/trainer/getClass/"+st.getGroupId(), GroupBean.class);
 			gr.add(g);
 		}
 		
@@ -141,7 +141,7 @@ public class StudentServiceImp implements StudentService {
 		for(StudentBean stud:students) {
 			s+=stud.getRating();
 		}
-		GroupBean response= restTemplate.getForObject("http://localhost:8787/elearning/api/trainer/getClass/"+groupId,GroupBean.class);
+		GroupBean response= restTemplate.getForObject("http://localhost:8080/elearning/api/trainer/getClass/"+groupId,GroupBean.class);
 		Map < String, Integer > params = new HashMap < String,Integer > ();
 
 		response.setRating(s/students.size());
@@ -150,7 +150,7 @@ public class StudentServiceImp implements StudentService {
 		//restTemplate.put("http://localhost:8787/elearning/api/trainer/edit/"+groupId,response);
 		//restTemplate.put("http://localhost:8787/elearning/api/trainer/edit/"+groupId,response,GroupBean.class);
 		params.put("rating",s/students.size());
-		restTemplate.put("http://localhost:8787/elearning/api/trainer/edit/"+groupId, response, params);
+		restTemplate.put("http://localhost:8080/elearning/api/trainer/edit/"+groupId, response, params);
 		
 		
 		return studDao.saveAndFlush(st);
